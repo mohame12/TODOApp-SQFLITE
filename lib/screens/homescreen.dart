@@ -2,10 +2,7 @@ import 'package:abdallatodoapp/cubits/navigation_bar_cubit.dart';
 import 'package:abdallatodoapp/cubits/navigation_bar_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:intl/intl.dart';
-
-import '../consts.dart';
 import '../widgets/cutsomtff.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,9 +11,8 @@ class HomeScreen extends StatelessWidget {
 
 
 
-  Database? db;
-  bool isShowen = false;
-  Icon icon = Icon(Icons.edit, color: Colors.white,);
+
+
   GlobalKey<FormState>formkey = GlobalKey();
   TextEditingController title = TextEditingController();
   TextEditingController time = TextEditingController();
@@ -25,15 +21,15 @@ class HomeScreen extends StatelessWidget {
 
   GlobalKey<ScaffoldState> scaffoldkey = GlobalKey();
 
-  @override
-  void initState() {
-    createDatabase();
-  }
+  // @override
+  // void initState() {
+  //   createDatabase();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => NavigationBarCubit(),
+      create: (context) => NavigationBarCubit()..createDatabase(),
       child: BlocConsumer<NavigationBarCubit, NavigationBarState>(
         listener: (context, state) {
           // TODO: implement listener
@@ -56,7 +52,7 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 onPressed(context);
               },
-              child: icon,
+              child: NavigationBarCubit.get(context).icon,
               backgroundColor: Colors.black,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(28)),
@@ -79,11 +75,9 @@ class HomeScreen extends StatelessWidget {
                 NavigationBarCubit.get(context).ontap(c);
               },
             ),
-             body:
-              // tasks.length == 0
-            //     ? Center(child: CircularProgressIndicator())
-            //     :
-              NavigationBarCubit.get(context).screensList[NavigationBarCubit.get(context).index],
+            body: NavigationBarCubit.get(context).tasks.length == 0
+                ? Center(child: CircularProgressIndicator())
+                : NavigationBarCubit.get(context).screensList[NavigationBarCubit.get(context).index],
           );
         },
       ),
@@ -92,7 +86,7 @@ class HomeScreen extends StatelessWidget {
 
 
   void onPressed(BuildContext context) {
-    if (isShowen == false) {
+    if (NavigationBarCubit.get(context).isShowen == false) {
       scaffoldkey.currentState?.showBottomSheet((context) =>
           Container(
             height: 300,
@@ -157,15 +151,17 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),).closed.then((val) {
-        insertdatabase(title: title.text, date: date.text, time: time.text);
+       // insertdatabase(title: title.text, date: date.text, time: time.text);
 
-        isShowen = false;
+        NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
+       // isShowen = false;
         // setState(() {
         //   icon = Icon(Icons.edit, color: Colors.white,);
         // });
 
       });
-      isShowen = true;
+      NavigationBarCubit.get(context).changeBootom(isshow: true, con: Icon(Icons.add,color: Colors.white,));
+      //isShowen = true;
       // setState(() {
       //   icon=Icon(Icons.add,color: Colors.white,);
       //
@@ -173,9 +169,10 @@ class HomeScreen extends StatelessWidget {
     }
     else {
       if (formkey.currentState!.validate()) {
-        insertdatabase(title: title.text, date: date.text, time: time.text);
+       // insertdatabase(title: title.text, date: date.text, time: time.text);
         Navigator.pop(context);
-        isShowen = false;
+        NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
+       // isShowen = false;
         // setState(() {
         //   icon = Icon(Icons.edit, color: Colors.white,);
         // });
@@ -184,38 +181,7 @@ class HomeScreen extends StatelessWidget {
   }
 
 
-  void createDatabase() async {
-    db = await openDatabase('todo.db', version: 1,
-        onCreate: (db, version) async {
-          try {
-            await db.execute(
-                'CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT,date TEXT,time TEXT,status TEXT)');
-            print('TableCreated');
-          } catch (e) {
-            print('Error when creating table${e.toString()}');
-          }
-        }, onOpen: (db) {
-          getDataFromDatabase(db).then((val) {
-            tasks = val;
-            print(tasks);
-          });
-          print('database Opened');
-        });
-  }
 
-  Future insertdatabase(
-      {required String title, required String date, required String time}) async {
-    await db!.transaction((txn) async {
-      int id1 = await txn.rawInsert(
-          'INSERT INTO tasks(title, date, time,status) VALUES("$title", "$date", "$time","True")');
-      print('inserted num1: $id1');
-    });
-  }
-
-
-  Future<List<Map>> getDataFromDatabase(db) async {
-    return await db.rawQuery('SELECT * FROM tasks');
-  }
 
 }
 
