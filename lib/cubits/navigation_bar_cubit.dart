@@ -5,16 +5,20 @@ import '../screens/achivescreen.dart';
 import '../screens/donescreen.dart';
 import '../screens/menuscreen.dart';
 import 'navigation_bar_state.dart';
-
 class NavigationBarCubit extends Cubit<NavigationBarState> {
   NavigationBarCubit() : super(NavigationBarInitial());
-  static NavigationBarCubit get(context)=>BlocProvider.of(context);
 
+  static NavigationBarCubit get(context) => BlocProvider.of(context);
   Database? db;
   int index = 0;
-  List<Map>tasks=[];
+  List<Map>tasks = [];
   bool isShowen = false;
-  Icon icon = Icon(Icons.edit, color: Colors.white,);
+  Icon icon = const Icon(Icons.edit, color: Colors.white,);
+
+  List<Map> newtasks = [];
+  List<Map> donetasks = [];
+  List<Map> archivetasks = [];
+
 
   List<Widget> screensList = [
     Menuscreen(),
@@ -22,20 +26,16 @@ class NavigationBarCubit extends Cubit<NavigationBarState> {
     Donescreen(),
   ];
 
-
-  void ontap(ind)
-  {
-    index=ind;
+  void ontap(ind) {
+    index = ind;
     emit(NavigationBarCahngeState());
   }
 
-  changeBootom({required bool isshow,required Icon con})
-  {
-    isShowen=isshow;
-    icon=con;
+  changeBootom({required bool isshow, required Icon con}) {
+    isShowen = isshow;
+    icon = con;
     emit(FABChangeState());
   }
-
 
   void createDatabase() {
     openDatabase('todo.db', version: 1,
@@ -43,46 +43,86 @@ class NavigationBarCubit extends Cubit<NavigationBarState> {
           try {
             await db.execute(
                 'CREATE TABLE tasks (id INTEGER PRIMARY KEY, title TEXT,date TEXT,time TEXT,status TEXT)');
-            print('TableCreated');
           } catch (e) {
-            print('Error when creating table${e.toString()}');
+            debugPrint('Error when creating table${e.toString()}');
           }
         }, onOpen: (db) {
-      emit(NavigationBarOPenDataBaseState());
-          getDataFromDatabase(db).then((val) {
-            tasks = val;
-            print(tasks);
-            emit(NavigationBarGetDataBaseState());
-          });
+          emit(NavigationBarOPenDataBaseState());
+          getDataFromDatabase(db);
           print('database Opened');
-        }).then((VAL){db=VAL;emit(NavigationBarCreateDataBaseState());});
+        }).then((VAL) {
+      db = VAL;
+      emit(NavigationBarCreateDataBaseState());
+    });
   }
 
   Future insertdatabase(
       {required String title, required String date, required String time}) async {
-    await db?.transaction((txn)  => txn.rawInsert(
-          'INSERT INTO tasks(title, date, time,status) VALUES("$title", "$date", "$time","True")').then((val){
-            print('$val insertedSucessfully');
-            emit(NavigationBarInsertDataBaseState());
-            getDataFromDatabase(db).then((val)
-            {
-              tasks=val;
-              print(tasks);
-              emit(NavigationBarGetDataBaseState());
-            });
-          
-          }).catchError(
-            (error)
-        {
-          print('there are an error $error');
-        }));
+    await db?.transaction((txn) =>
+        txn.rawInsert(
+            'INSERT INTO tasks(title, date, time,status) VALUES("$title", "$date", "$time","True")')
+            .then((val) {
+          print('$val insertedSucessfully');
+          emit(NavigationBarInsertDataBaseState());
+          getDataFromDatabase(db);
+          //     .then((val)
+          // {
+          //   tasks=val;
+          //   print(tasks);
+          //   emit(NavigationBarGetDataBaseState());
+          // });
+
+        }).catchError(
+                (error) {
+              print('there are an error $error');
+            }));
   }
 
 
-  Future<List<Map>> getDataFromDatabase(db) async {
-    return await db.rawQuery('SELECT * FROM tasks');
+  void getDataFromDatabase(db) {
+    newtasks = [];
+    donetasks = [];
+    archivetasks = [];
+    db.rawQuery('SELECT * FROM tasks').then((val) {
+      tasks = val;
+      tasks.forEach((element) {
+        if (element['status'] == 'True') {
+          newtasks.add(element);
+        }
+        else if (element['status'] == 'done') {
+          donetasks.add(element);
+        }
+        else if (element['status'] == 'Archive') {
+          archivetasks.add(element);
+        }
+      });
+      emit(NavigationBarGetDataBaseState());
+    });
   }
 
 
+  void updateStatus({
+    required String status,
+    required int id
+  }) {
+    db!.rawUpdate(
+        'UPDATE tasks SET status=? WHERE id = ?',
+        [status, '$id']
+    ).then((val) {
+      getDataFromDatabase(db);
+      emit(NavigationBarUpdateStatusDataBaseState());
+    });
+  }
 
+
+  void deleteData({
+    required int id
+  }) {
+    db!.rawDelete(
+        'DELETE FROM tasks WHERE id = ?', [id])
+        .then((val) {
+      getDataFromDatabase(db);
+      emit(NavigationBarDeleteDataBaseState());
+    });
+  }
 }
