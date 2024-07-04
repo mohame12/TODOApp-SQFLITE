@@ -33,6 +33,13 @@ class HomeScreen extends StatelessWidget {
       child: BlocConsumer<NavigationBarCubit, NavigationBarState>(
         listener: (context, state) {
           // TODO: implement listener
+          if(state is NavigationBarInsertDataBaseState)
+            {
+
+              title.text='';
+              time.text='';
+              date.text='';
+            }
         },
         builder: (context, state) {
           return Scaffold(
@@ -151,6 +158,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),).closed.then((val) {
+             //NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
        // insertdatabase(title: title.text, date: date.text, time: time.text);
 
         NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
@@ -169,7 +177,9 @@ class HomeScreen extends StatelessWidget {
     }
     else {
       if (formkey.currentState!.validate()) {
-       // insertdatabase(title: title.text, date: date.text, time: time.text);
+        NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
+
+        // insertdatabase(title: title.text, date: date.text, time: time.text);
         Navigator.pop(context);
         NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
        // isShowen = false;

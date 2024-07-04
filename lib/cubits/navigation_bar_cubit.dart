@@ -60,8 +60,22 @@ class NavigationBarCubit extends Cubit<NavigationBarState> {
 
   Future insertdatabase(
       {required String title, required String date, required String time}) async {
-    await db!.transaction((txn)  => txn.rawInsert(
-          'INSERT INTO tasks(title, date, time,status) VALUES("$title", "$date", "$time","True")').then((val){emit(NavigationBarInsertDataBaseState());}));
+    await db?.transaction((txn)  => txn.rawInsert(
+          'INSERT INTO tasks(title, date, time,status) VALUES("$title", "$date", "$time","True")').then((val){
+            print('$val insertedSucessfully');
+            emit(NavigationBarInsertDataBaseState());
+            getDataFromDatabase(db).then((val)
+            {
+              tasks=val;
+              print(tasks);
+              emit(NavigationBarGetDataBaseState());
+            });
+          
+          }).catchError(
+            (error)
+        {
+          print('there are an error $error');
+        }));
   }
 
 
