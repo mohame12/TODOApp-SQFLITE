@@ -9,3 +9,5 @@ final class NavigationBarGetDataBaseState extends NavigationBarState{}
 final class NavigationBarOPenDataBaseState extends NavigationBarState{}
 final class NavigationBarInsertDataBaseState extends NavigationBarState{}
 final class FABChangeState extends NavigationBarState{}
+final class NavigationBarUpdateStatusDataBaseState extends NavigationBarState{}
+final class NavigationBarDeleteDataBaseState extends NavigationBarState{}

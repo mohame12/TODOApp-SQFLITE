@@ -33,6 +33,13 @@ class HomeScreen extends StatelessWidget {
       child: BlocConsumer<NavigationBarCubit, NavigationBarState>(
         listener: (context, state) {
           // TODO: implement listener
+          if(state is NavigationBarInsertDataBaseState)
+            {
+
+              title.text='';
+              time.text='';
+              date.text='';
+            }
         },
         builder: (context, state) {
           return Scaffold(
@@ -41,7 +48,7 @@ class HomeScreen extends StatelessWidget {
             appBar: AppBar(
               backgroundColor: Colors.white,
               automaticallyImplyLeading: false,
-              title: Center(
+              title: const Center(
                   child: Text(
                     'T O D O  A P P',
                     style: TextStyle(
@@ -58,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(28)),
             ),
             bottomNavigationBar: BottomNavigationBar(
-              items: [
+              items: const [
                 BottomNavigationBarItem(
                     icon: Icon(Icons.menu), label: 'M E N U'),
                 BottomNavigationBarItem(
@@ -75,8 +82,8 @@ class HomeScreen extends StatelessWidget {
                 NavigationBarCubit.get(context).ontap(c);
               },
             ),
-            body: NavigationBarCubit.get(context).tasks.length == 0
-                ? Center(child: CircularProgressIndicator())
+            body: state is NavigationBarOPenDataBaseState
+                ? const Center(child: CircularProgressIndicator())
                 : NavigationBarCubit.get(context).screensList[NavigationBarCubit.get(context).index],
           );
         },
@@ -91,7 +98,7 @@ class HomeScreen extends StatelessWidget {
           Container(
             height: 300,
             width: double.infinity,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
                 color: Colors.white,
 
                 borderRadius: BorderRadiusDirectional.only(
@@ -104,7 +111,7 @@ class HomeScreen extends StatelessWidget {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      SizedBox(height: 12),
+                      const SizedBox(height: 12),
                       CustomTFF(
                         textInputType: TextInputType.text,
                         textEditingController: title,
@@ -112,7 +119,7 @@ class HomeScreen extends StatelessWidget {
                         isScure: false,
                         prefix: Icons.title
                         ,),
-                      SizedBox(height: 20,),
+                      const SizedBox(height: 20,),
                       CustomTFF(
                         ontap: () {
                           showTimePicker(
@@ -128,7 +135,7 @@ class HomeScreen extends StatelessWidget {
                         isScure: false,
                         prefix: Icons.access_time_outlined
                         ,),
-                      SizedBox(height: 20,),
+                      const SizedBox(height: 20,),
                       CustomTFF(
                         ontap: () {
                           showDatePicker(context: context,
@@ -151,9 +158,10 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),).closed.then((val) {
+             //NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
        // insertdatabase(title: title.text, date: date.text, time: time.text);
 
-        NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
+        NavigationBarCubit.get(context).changeBootom(isshow: false, con: const Icon(Icons.edit, color: Colors.white,));
        // isShowen = false;
         // setState(() {
         //   icon = Icon(Icons.edit, color: Colors.white,);
@@ -169,7 +177,9 @@ class HomeScreen extends StatelessWidget {
     }
     else {
       if (formkey.currentState!.validate()) {
-       // insertdatabase(title: title.text, date: date.text, time: time.text);
+        NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
+
+        // insertdatabase(title: title.text, date: date.text, time: time.text);
         Navigator.pop(context);
         NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
        // isShowen = false;

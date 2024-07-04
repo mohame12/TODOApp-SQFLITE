@@ -37,6 +37,7 @@ class CustomTFF extends StatelessWidget {
         {
           return 'Required Feild...';
         }
+        return null;
       },
       onTap: ontap,
       obscureText:isScure ,
@@ -44,27 +45,27 @@ class CustomTFF extends StatelessWidget {
       keyboardType: TextInputType.emailAddress,
       onFieldSubmitted:onSupmitted ,
       onChanged: onChange,
-      style: TextStyle(color: Colors.black),
+      style: const TextStyle(color: Colors.black),
       decoration: InputDecoration(
           suffixIcon:IconButton(icon: Icon(susfix), onPressed:susFun ,),
           prefixIcon:Icon(prefix) ,
           hintText: hint,
-          hintStyle: TextStyle(color: Colors.black45),
+          hintStyle: const TextStyle(color: Colors.black45),
           labelText: lable,
-          labelStyle: TextStyle(color: Colors.black45),
+          labelStyle: const TextStyle(color: Colors.black45),
 
           enabled: true,
           enabledBorder:OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.black),
+            borderSide: const BorderSide(color: Colors.black),
           ) ,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10),
-            borderSide: BorderSide(color: Colors.black),
+            borderSide: const BorderSide(color: Colors.black),
           ),
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.black)
+              borderSide: const BorderSide(color: Colors.black)
           )
       ),
     );
