@@ -82,7 +82,7 @@ class HomeScreen extends StatelessWidget {
                 NavigationBarCubit.get(context).ontap(c);
               },
             ),
-            body: state is NavigationBarOPenDataBaseState
+            body: state is NavigationBarInsertDataBaseState
                 ? const Center(child: CircularProgressIndicator())
                 : NavigationBarCubit.get(context).screensList[NavigationBarCubit.get(context).index],
           );
@@ -158,34 +158,15 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ),).closed.then((val) {
-             //NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
-       // insertdatabase(title: title.text, date: date.text, time: time.text);
-
-        NavigationBarCubit.get(context).changeBootom(isshow: false, con: const Icon(Icons.edit, color: Colors.white,));
-       // isShowen = false;
-        // setState(() {
-        //   icon = Icon(Icons.edit, color: Colors.white,);
-        // });
-
+            NavigationBarCubit.get(context).changeBootom(isshow: false, con: const Icon(Icons.edit, color: Colors.white,));
       });
       NavigationBarCubit.get(context).changeBootom(isshow: true, con: Icon(Icons.add,color: Colors.white,));
-      //isShowen = true;
-      // setState(() {
-      //   icon=Icon(Icons.add,color: Colors.white,);
-      //
-      // });
     }
     else {
       if (formkey.currentState!.validate()) {
         NavigationBarCubit.get(context).insertdatabase(title: title.text, date: date.text, time: time.text);
-
-        // insertdatabase(title: title.text, date: date.text, time: time.text);
         Navigator.pop(context);
         NavigationBarCubit.get(context).changeBootom(isshow: false, con: Icon(Icons.edit, color: Colors.white,));
-       // isShowen = false;
-        // setState(() {
-        //   icon = Icon(Icons.edit, color: Colors.white,);
-        // });
       }
     }
   }
